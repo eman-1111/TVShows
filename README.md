@@ -1,9 +1,5 @@
 TVShow
 ===================================
-![Screenshot](/image/main_screen.jpg )
-![Screenshot](/image/detail_scree.jpg)
-
-
 
 Main architecture
 ===================================
@@ -21,3 +17,7 @@ Library Used
 * Navigation: for easier navigation support
 * Room : for data persistence
 * ViewModel & LiveData : for handling data in a lifecycle-aware fashion
+
+
+![Screenshot](/image/main_screen.jpg )
+![Screenshot](/image/detail_scree.jpg)
