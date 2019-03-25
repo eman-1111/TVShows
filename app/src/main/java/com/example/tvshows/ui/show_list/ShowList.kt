@@ -21,6 +21,7 @@ import com.example.tvshows.data.model.TvShow
 import com.example.tvshows.ui.ScopedFragment
 import com.example.tvshows.utils.AppConstants
 import kotlinx.android.synthetic.main.fragment_show_list.*
+import kotlinx.android.synthetic.main.show_list_item.*
 import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
@@ -33,7 +34,7 @@ class ShowList : ScopedFragment(), KodeinAware {
     private val viewModelFactory: ShowListFactory by instance()
 
     private lateinit var viewModel: ShowListViewModel
-    private lateinit  var  adapter: ShowListAdapter
+    private lateinit var adapter: ShowListAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,12 +46,12 @@ class ShowList : ScopedFragment(), KodeinAware {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ShowListViewModel::class.java)
 
-        adapter = ShowListAdapter( {
+        adapter = ShowListAdapter({
             val bundle = Bundle()
-            bundle.putInt("idArg",it.id!!)
-            Navigation.findNavController(activity!!,R.id.show_list_cl).navigate(R.id.action_list_to_showDetail,bundle)
+            bundle.putInt("idArg", it.id!!)
+            Navigation.findNavController(activity!!, R.id.show_list_cl).navigate(R.id.action_list_to_showDetail, bundle)
 
-        },{
+        }, {
             showdialog(it)
 
         })
@@ -66,10 +67,16 @@ class ShowList : ScopedFragment(), KodeinAware {
     private fun bindUI() = launch {
         val tvShow = viewModel.getTVShowList()
         tvShow.observe(this@ShowList, Observer {
-            if (it.isEmpty()) return@Observer
-
-
             group_loading.visibility = View.GONE
+
+            if (it.isEmpty()) {
+                load_error_txt.visibility = View.VISIBLE
+                return@Observer
+            }
+
+
+
+            load_error_txt.visibility = View.GONE
             adapter.loadItems(it ?: emptyList())
 
         })
@@ -77,12 +84,19 @@ class ShowList : ScopedFragment(), KodeinAware {
 
     private fun updateToolbar() {
         (activity as? AppCompatActivity)?.supportActionBar?.title = getResources().getString(R.string.app_name)
-        (activity as? AppCompatActivity)?.supportActionBar?.
-            setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(context!!, R.color.colorPrimary)))
+        (activity as? AppCompatActivity)?.supportActionBar?.setBackgroundDrawable(
+            ColorDrawable(
+                ContextCompat.getColor(
+                    context!!,
+                    R.color.colorPrimary
+                )
+            )
+        )
     }
+
     fun showdialog(tvShow: TvShow) {
 
-        var message: String =  AppConstants.getErrorMessage(tvShow.fav!!,context!! )
+        var message: String = AppConstants.getErrorMessage(tvShow.fav!!, context!!)
         AlertDialog.Builder(context!!)
             .setIcon(android.R.drawable.ic_dialog_alert)
             .setTitle(message)
@@ -90,7 +104,7 @@ class ShowList : ScopedFragment(), KodeinAware {
             .setPositiveButton(getResources().getString(R.string.yes), DialogInterface.OnClickListener { dialog, i ->
                 viewModel.changeFavState(tvShow)
             })
-            .setNegativeButton(getResources().getString(R.string.no),null)
+            .setNegativeButton(getResources().getString(R.string.no), null)
             .show()
     }
 

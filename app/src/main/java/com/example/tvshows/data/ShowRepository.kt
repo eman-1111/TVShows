@@ -8,10 +8,12 @@ import com.example.tvshows.utils.AppConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.threeten.bp.ZonedDateTime
 
 class ShowRepository(
     private val tvShowDao: ShowDao,
-    private val tVShowDataSourse: TVShowDataSourse) {
+    private val tVShowDataSourse: TVShowDataSourse
+) {
 
 
     init {
@@ -23,15 +25,16 @@ class ShowRepository(
         }
     }
 
-    private fun persistFetchedTVSHow(tvShow: List<TvShow>){
+    private fun persistFetchedTVSHow(tvShow: List<TvShow>) {
         GlobalScope.launch(Dispatchers.IO) {
             tvShowDao.insertAll(tvShow)
 
         }
     }
 
-     suspend fun fetchTVShow() {
-         tVShowDataSourse.fetchTVShow()
+    suspend fun fetchTVShow() {
+        if (isFetchNeeded(ZonedDateTime.now().minusHours(1)))
+            tVShowDataSourse.fetchTVShow()
     }
 
 
@@ -43,20 +46,25 @@ class ShowRepository(
         return tvShowDao.getFavShowList(AppConstants.FAV)
     }
 
-    fun getShow(showId: Int) : LiveData<TvShow> {
-       return tvShowDao.getShow(showId)
+    fun getShow(showId: Int): LiveData<TvShow> {
+        return tvShowDao.getShow(showId)
     }
 
     fun deleteShow(showId: Int) {
         GlobalScope.launch(Dispatchers.IO) {
-        tvShowDao.deleteShow(showId)}
+            tvShowDao.deleteShow(showId)
+        }
     }
 
 
     fun updateShow(tvShow: TvShow) {
         GlobalScope.launch(Dispatchers.IO) {
-        tvShowDao.updata(tvShow)}
+            tvShowDao.updata(tvShow)
+        }
     }
 
-
+    private fun isFetchNeeded(lastFetchTime: ZonedDateTime): Boolean {
+        val thirtyMinutesAgo = ZonedDateTime.now().minusMinutes(30)
+        return lastFetchTime.isBefore(thirtyMinutesAgo)
+    }
 }

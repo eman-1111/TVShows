@@ -65,10 +65,8 @@ class ShowListFav : ScopedFragment() , KodeinAware {
     private fun bindUI() = launch {
         val tvShow = viewModel.getFavTVShowList()
         tvShow.observe(this@ShowListFav, Observer {
-            if (it.isEmpty()) return@Observer
-
-
             group_loading.visibility = View.GONE
+            if (it.isEmpty()) return@Observer
             adapter.loadItems(it ?: emptyList())
 
         })

@@ -7,6 +7,7 @@ import com.example.tvshows.data.network.*
 import com.example.tvshows.ui.show_detail.ShowDetailFactory
 import com.example.tvshows.ui.show_list.ShowListFactory
 import com.example.tvshows.ui.show_list_Fav.ShowListFavFactory
+import com.jakewharton.threetenabp.AndroidThreeTen
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.androidXModule
@@ -28,5 +29,10 @@ class TVShowApplication : Application(), KodeinAware {
         bind() from provider { ShowListFactory(instance()) }
         bind() from provider { ShowListFavFactory(instance()) }
         bind() from provider { ShowDetailFactory(instance()) }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        AndroidThreeTen.init(this)
     }
 }

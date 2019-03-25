@@ -27,5 +27,6 @@
     <string name="remover_from_fave">Are you Sure you want to remove from Favorite</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="load_error">Oops, something went wrong</string>
 
 </resources>
